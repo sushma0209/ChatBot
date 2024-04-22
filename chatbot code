@@ -1,0 +1,156 @@
+import datetime
+import os
+import random
+import time
+import webbrowser
+from inspect import EndOfBlock
+
+
+import pyautogui
+import pyjokes
+import pyttsx3
+import speech_recognition as sr
+import wikipedia
+from googlesearch import search
+
+engine = pyttsx3.init()
+voices = engine.getProperty('voices')
+engine.setProperty('voice',voices[1].id)
+engine.setProperty('rate',200)
+
+
+
+greet = ["hi","hai","hello","What's up"]
+
+def speak(query):
+    engine.say(query)
+    engine.runAndWait()
+
+def wishing():
+    hour = datetime.datetime.now().hour
+    if hour>= 6 and hour <=12:
+        speak("Good Morning sir , How can i help you")
+    elif hour>= 12 and hour <=16:
+        speak("Good Afternoon sir , How can i help you")
+    elif hour>= 16 and hour <=22:
+        speak("Good Evening sir , How can i help you")
+    else:
+        speak("Good Night")
+
+    
+
+def command():
+    r=sr.Recognizer()
+    with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source,duration = 1)
+        print("speak sir!")
+        audio = r.listen(source)
+    try:
+        print(2)
+        print(r.recognize_google(audio,language= "en-us"))
+        query = r.recognize_google(audio,language= "en-us")
+        print(3)
+    except Exception as e:
+        print(e)   
+        print("Unable to Recognize your voice.") 
+        return "None"
+    command()
+    return query
+        
+        
+    
+wishing()
+print(1)
+while True:
+    print(5)
+    query = command()
+    print(6)
+    query = query.lower()
+    if "your name" in query:
+        speak("My name is jisoo")
+        print("My name is jisoo")
+    elif "joke" in query:
+        joke = random.choice(pyjokes.get_jokes())
+        print(joke)
+        speak(joke)
+        pass
+    elif "screenshot" in query:
+        img = pyautogui.screenshot()
+        img.save("1.png")
+        img.show()
+        speak("screenshot is taken")
+        pass
+    elif "stop listening" in query:
+        speak("for how many minutes?")
+        print("for how many minutes?")
+        try:
+            query = command()
+            query = float(query)
+            pass
+        except:
+            speak("please mention correctly")
+            print("Example 1,200(minutes)")
+            query  = command()
+            query = float(query)
+            speak("ok")
+            time.sleep(query*60)
+            speak("I'm back")
+            pass
+    elif "search google" in query:
+        speak("what do you wanna search?")
+        print("what do you wanna search?")
+        query = command()
+        query = query.lower()
+        result = search(query,num_results=3)
+        webbrowser.open(result[0])
+        print(*result,sep="\n")
+        speak("opening google")
+        
+    
+
+    elif "wikipedia" in query:
+        speak("what do you wanna search?")
+        print("what do you wanna search?")
+        query = command()
+        query = query.lower()
+        result = wikipedia.summary(query,sentences=3)
+        print(result)
+        speak("According to wikipedia , " + result)
+
+    elif "listen music" in query:
+        speak("what do you wanna listen?")
+        print("what do you wanna listen?")
+        query = command()
+        query = query.lower()
+        songlink = "https://open.spotify.com/search/"+query
+        webbrowser.open(songlink)
+        speak("opening SPotify")
+
+    #elif "open notepad" in query.lower():
+     #   speak("opening notepad")
+      #  os.startfile(r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Accessories\notepad")
+
+    #elif "shutdown" in query:
+     #   if input("Are you sure, then press enter:") == "":
+      #      speak("shuttind down")
+       #     os.system("shutdown /s /t 1")
+       # pass
+  #  elif "log oout" in query:
+   #     if input("Are you sure, then press enter:") == "":
+    #        speak("shuttind down")
+     #       os.system("shutdown -1")
+      #  pass
+    #elif "restart" in query:
+     #   if input("Are you sure, then press enter:") == "":
+      #      speak("restarting")
+       #     os.system("shutdown /r /t 1")
+        #pass
+    #elif"go offline" in query:
+     #   speak("Going offline")
+      #  print("offline")
+       # quit()
+        
+    else:
+        speak("sorry i can't have a command for")
+        pass
+    EndOfBlock
